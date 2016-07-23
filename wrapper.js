@@ -23,7 +23,7 @@ function getProgram(context, vertexShader, fragmentShader) {
 }
 
 function setIndexProperty(context, program, name, type, enableArray) {
-	program[name + type + 'Index'] = context['get' + type === 'Attribute' ? 'Attrib' : 'Uniform' + 'Location'](program, name);
+	program[name + type + 'Index'] = context['get' + (type === 'Attribute' ? 'Attrib' : 'Uniform') + 'Location'](program, name);
 	if (enableArray) {
 		context.enableVertexAttribArray(program[name + type + 'Index']);
 	}
