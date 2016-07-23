@@ -19,11 +19,14 @@ function getProgram(context, vertexShader, fragmentShader) {
 	context.attachShader(program, fragmentShader);
 	context.linkProgram(program);
 	context.useProgram(program);
-	program.vertexPositionAttributeIndex = context.getAttribLocation(program, 'vertexPosition');
-	context.enableVertexAttribArray(program.vertexPositionAttributeIndex);
-	program.projectionMatrixUniformIndex = context.getUniformLocation(program, 'projectionMatrix');
-	program.modelViewMatrixUniformIndex = context.getUniformLocation(program, 'modelViewMatrix');
 	return program;
+}
+
+function setIndexProperty(context, program, name, type, enableArray) {
+	program[name + type + 'Index'] = context['get' + type === 'Attribute' ? 'Attrib' : 'Uniform' + 'Location'](program, name);
+	if (enableArray) {
+		context.enableVertexAttribArray(program[name + type + 'Index']);
+	}
 }
 
 function setShaderMatrices(context, program, projectionMatrix, modelViewMatrix) {
