@@ -1,13 +1,13 @@
 function getCanvas() {
-	return document.body.appendChild(document.createElement('canvas'));
+	return document.body.appendChild(document.createElement("canvas"));
 }
 
 function getContext(canvas, options) {
-	return canvas.getContext('webgl', options);
+	return canvas.getContext("webgl", options);
 }
 
 function getShader(context, scriptElement) {
-	var shader = context.createShader(scriptElement.type === 'x-shader/x-vertex' ? context.VERTEX_SHADER : context.FRAGMENT_SHADER);
+	var shader = context.createShader(scriptElement.type === "x-shader/x-vertex" ? context.VERTEX_SHADER : context.FRAGMENT_SHADER);
 	context.shaderSource(shader, scriptElement.textContent);
 	context.compileShader(shader);
 	return shader;
@@ -22,10 +22,10 @@ function getProgram(context, vertexShader, fragmentShader) {
 	return program;
 }
 
-function setIndexProperty(context, program, name, type, enableArray) {
-	program[name + type + 'Index'] = context['get' + (type === 'Attribute' ? 'Attrib' : 'Uniform') + 'Location'](program, name);
-	if (enableArray) {
-		context.enableVertexAttribArray(program[name + type + 'Index']);
+function setIndexProperty(context, program, name, type) {
+	program[name + type + "Index"] = context["get" + (type === "Attribute" ? "Attrib" : "Uniform") + "Location"](program, name);
+	if (type === "Attribute") {
+		context.enableVertexAttribArray(program[name + type + "Index"]);
 	}
 }
 
