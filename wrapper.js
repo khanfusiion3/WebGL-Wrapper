@@ -1,44 +1,62 @@
-function getCanvas() {
+function getCanvasElement() {
 	return document.body.appendChild(document.createElement("canvas"));
 }
 
-function getContext(canvas, options) {
-	return canvas.getContext("webgl", options);
+function getContextGL(canvasElement, options) {
+	return canvasElement.getContext("webgl", options);
 }
 
-function getShader(context, scriptElement) {
-	var shader = context.createShader(scriptElement.type === "x-shader/x-vertex" ? context.VERTEX_SHADER : context.FRAGMENT_SHADER);
-	context.shaderSource(shader, scriptElement.textContent);
-	context.compileShader(shader);
+function getShader(contextGL, scriptElement) {
+	var shader = contextGL.createShader(scriptElement.type === "x-shader/x-vertex" ? contextGL.VERTEX_SHADER : contextGL.FRAGMENT_SHADER);
+	contextGL.shaderSource(shader, scriptElement.textContent);
+	contextGL.compileShader(shader);
 	return shader;
 }
 
-function getProgram(context, vertexShader, fragmentShader) {
-	var program = context.createProgram();
-	context.attachShader(program, vertexShader);
-	context.attachShader(program, fragmentShader);
-	context.linkProgram(program);
-	context.useProgram(program);
+function getProgram(contextGL, vertexShader, fragmentShader) {
+	var program = contextGL.createProgram();
+	contextGL.attachShader(program, vertexShader);
+	contextGL.attachShader(program, fragmentShader);
+	contextGL.linkProgram(program);
+	contextGL.useProgram(program);
 	return program;
 }
 
-function setIndexProperty(context, program, name, type) {
-	program[name + type + "Index"] = context["get" + (type === "Attribute" ? "Attrib" : "Uniform") + "Location"](program, name);
+function setIndexProperty(contextGL, program, name, type) {
+	program[name + type + "Index"] = contextGL["get" + (type === "Attribute" ? "Attrib" : "Uniform") + "Location"](program, name);
 	if (type === "Attribute") {
-		context.enableVertexAttribArray(program[name + type + "Index"]);
+		contextGL.enableVertexAttribArray(program[name + type + "Index"]);
 	}
 }
 
-function setShaderMatrices(context, program, projectionMatrix, modelViewMatrix) {
-  context.uniformMatrix4fv(program.projectionMatrixUniformIndex, false, projectionMatrix);
-  context.uniformMatrix4fv(program.modelViewMatrixUniformIndex, false, modelViewMatrix);
+function setShaderMatrices(contextGL, program, projectionMatrix, modelViewMatrix) {
+  contextGL.uniformMatrix4fv(program.projectionMatrixUniformIndex, false, projectionMatrix);
+  contextGL.uniformMatrix4fv(program.modelViewMatrixUniformIndex, false, modelViewMatrix);
 }
 
-function getBuffer(context, type, data, usage, thingSize) {
-	var buffer = context.createBuffer();
-	context.bindBuffer(type, buffer);
-	context.bufferData(type, new Float32Array(data), usage);
+function getBuffer(contextGL, type, data, usage, thingSize) {
+	var buffer = contextGL.createBuffer();
+	contextGL.bindBuffer(type, buffer);
+	contextGL.bufferData(type, new Float32Array(data), usage);
 	buffer.thingSize = thingSize;
 	buffer.numberOfThings = data.length / thingSize;
 	return buffer;
+}
+
+function getTexture(contextGL, src) {
+	var texture = contextGL.createTexture();
+	texture.image = new Image();
+	texture.image.addEventListener("load", function(event) {
+  	handleLoadedTexture(contextGL, texture);
+  }, false);
+	texture.image.src = src;
+	return texture;
+}
+
+function handleLoadedTexture(contextGL, texture) {
+	contextGL.bindTexture(contextGL.TEXTURE_2D, texture);
+	contextGL.pixelStorei(contextGL.UNPACK_FLIP_Y_WEBGL, true);
+	contextGL.texImage2D(contextGL.TEXTURE_2D, 0, contextGL.RGBA, contextGL.RGBA, contextGL.UNSIGNED_BYTE, texture.image);
+	contextGL.texParameteri(contextGL.TEXTURE_2D, contextGL.TEXTURE_MAG_FILTER, contextGL.NEAREST);
+	contextGL.texParameteri(contextGL.TEXTURE_2D, contextGL.TEXTURE_MIN_FILTER, contextGL.NEAREST);
 }
