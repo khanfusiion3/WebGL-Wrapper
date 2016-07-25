@@ -43,20 +43,23 @@ function getBuffer(contextGL, type, data, usage, thingSize) {
 	return buffer;
 }
 
-function getTexture(contextGL, src) {
+function getTexture(contextGL, src, magFilter, minFilter) {
 	var texture = contextGL.createTexture();
 	texture.image = new Image();
 	texture.image.addEventListener("load", function(event) {
-  	handleLoadedTexture(contextGL, texture);
+  	handleLoadedTexture(contextGL, texture, magFilter, minFilter);
   }, false);
 	texture.image.src = src;
 	return texture;
 }
 
-function handleLoadedTexture(contextGL, texture) {
+function handleLoadedTexture(contextGL, texture, magFilter, minFilter) {
 	contextGL.bindTexture(contextGL.TEXTURE_2D, texture);
 	contextGL.pixelStorei(contextGL.UNPACK_FLIP_Y_WEBGL, true);
 	contextGL.texImage2D(contextGL.TEXTURE_2D, 0, contextGL.RGBA, contextGL.RGBA, contextGL.UNSIGNED_BYTE, texture.image);
-	contextGL.texParameteri(contextGL.TEXTURE_2D, contextGL.TEXTURE_MAG_FILTER, contextGL.NEAREST);
-	contextGL.texParameteri(contextGL.TEXTURE_2D, contextGL.TEXTURE_MIN_FILTER, contextGL.NEAREST);
+	contextGL.texParameteri(contextGL.TEXTURE_2D, contextGL.TEXTURE_MAG_FILTER, magFilter);
+	contextGL.texParameteri(contextGL.TEXTURE_2D, contextGL.TEXTURE_MIN_FILTER, minFilter);
+	if (minFilter !== contextGL.NEAREST && minFilter !== contextGL.LINEAR) {
+		contextGL.generateMipmap(contextGL.TEXTURE_2D);
+	}
 }
