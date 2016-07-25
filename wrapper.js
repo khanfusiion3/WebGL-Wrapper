@@ -29,9 +29,15 @@ function setIndexProperty(contextGL, program, name, type) {
 	}
 }
 
-function setShaderMatrices(contextGL, program, projectionMatrix, modelViewMatrix) {
+function setShaderMatrices(contextGL, program, projectionMatrix, modelViewMatrix, normalMatrix) {
   contextGL.uniformMatrix4fv(program.projectionMatrixUniformIndex, false, projectionMatrix);
   contextGL.uniformMatrix4fv(program.modelViewMatrixUniformIndex, false, modelViewMatrix);
+  if (normalMatrix) {
+  	 var normalMatrix = mat3.create();
+     mat4.toInverseMat3(modelViewMatrix, normalMatrix);
+     mat3.transpose(normalMatrix);
+     contextGL.uniformMatrix3fv(program.normalMatrixUniformIndex, false, normalMatrix);
+  }
 }
 
 function getBuffer(contextGL, type, data, usage, thingSize) {
