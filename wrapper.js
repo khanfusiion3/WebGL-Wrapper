@@ -29,10 +29,10 @@ function setIndexProperty(contextGL, program, name, type) {
 	}
 }
 
-function setShaderMatrices(contextGL, program, projectionMatrix, modelViewMatrix, normalMatrix) {
+function setShaderMatrices(contextGL, program, projectionMatrix, modelViewMatrix, lighting) {
   contextGL.uniformMatrix4fv(program.projectionMatrixUniformIndex, false, projectionMatrix);
   contextGL.uniformMatrix4fv(program.modelViewMatrixUniformIndex, false, modelViewMatrix);
-  if (normalMatrix) {
+  if (lighting) {
   	 var normalMatrix = mat3.create();
      mat4.toInverseMat3(modelViewMatrix, normalMatrix);
      mat3.transpose(normalMatrix);
