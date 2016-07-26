@@ -56,6 +56,7 @@ function getTexture(contextGL, src, magFilter, minFilter) {
   	handleLoadedTexture(contextGL, texture, magFilter, minFilter);
   }, false);
 	texture.image.src = src;
+	contextGL.bindTexture(contextGL.TEXTURE_2D, null);
 	return texture;
 }
 
