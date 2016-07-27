@@ -70,3 +70,15 @@ function handleLoadedTexture(contextGL, texture, magFilter, minFilter) {
 		contextGL.generateMipmap(contextGL.TEXTURE_2D);
 	}
 }
+
+function saveModelViewMatrix(modelViewMatrix) {
+	var copy = mat4.create();
+	mat4.set(modelViewMatrix, copy);
+	saveModelViewMatrix.stack.push(copy);
+}
+
+saveModelViewMatrix.stack = [];
+
+function restoreModelViewMatrix() {
+	return saveModelViewMatrix.stack.pop();
+}
